@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:smartversemobile/app/app_route.dart';
 import 'package:smartversemobile/feautures/dashboard/presentation/screens/account/presentation/screens/account.dart';
 import 'package:smartversemobile/feautures/dashboard/presentation/screens/home/presentation/screens/home.dart';
-import 'package:smartversemobile/feautures/dashboard/presentation/screens/load%20Calculator/presentation/screens/widgets/load_calculator.dart';
-import 'package:smartversemobile/feautures/dashboard/presentation/screens/saved/presentation/screens/widgets/saved.dart';
+import 'package:smartversemobile/feautures/dashboard/presentation/screens/load%20Calculator/presentation/screens/load_calculator.dart';
+import 'package:smartversemobile/feautures/dashboard/presentation/screens/saved/presentation/screens/saved.dart';
 import 'package:smartversemobile/feautures/dashboard/presentation/widgets/dashboard.dart';
 
 class DashboardScreen extends StatefulWidget {

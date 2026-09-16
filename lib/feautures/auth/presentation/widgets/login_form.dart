@@ -43,7 +43,7 @@ class _LoginFormState extends State<LoginForm> {
     return BlocConsumer<LoginCubit, LoginState>(
       listener: (context, state) {
         if (state is LoginSuccess) {
-          Navigator.pushReplacementNamed(context, AppRoute.dashboardScreen);
+          Navigator.pushReplacementNamed(context, AppRoute.savedCalculation);
         } else if (state is LoginFailure) {
           if (state.statusCode == 401) {
             IncorrectPasswordSheet.show(context, email: _emailController.text.trim());

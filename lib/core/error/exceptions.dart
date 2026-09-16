@@ -1,3 +1,4 @@
+
 /// Thrown when the server responds with an error status (400, 401, 500...).
 class ServerException implements Exception {
   final String message;

@@ -12,8 +12,11 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter_svg: ^2.3.0
   flutter_screenutil: ^5.9.3
-  dio: ^5.11.1
+  dotted_border: ^3.1.0
+  intl: ^0.20.3
+  bloc: ^9.2.1
   flutter_bloc: ^9.1.1
+  dio: ^5.11.1
   equatable: ^3.0.0
   flutter_secure_storage: ^11.1.1
   get_it: ^9.2.1
@@ -35,6 +38,7 @@ flutter:
     - family: DM Sans
       fonts:
         - asset: assets/fonts/DM_Sans/DMSans_18pt-SemiBold.ttf
+        - asset: assets/fonts/DM_Sans/DMSans_18pt-Regular.ttf
     - family: Fraunces
       fonts:
         - asset: assets/fonts/Fraunces/Fraunces_72pt-Black.ttf

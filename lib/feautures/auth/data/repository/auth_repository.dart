@@ -1,4 +1,4 @@
-import '../../../../core/storage/token_storage.dart';
+import '../../../../core/network/token_storage.dart';
 import '../dataSource/auth_remote_data_source.dart';
 import '../models/auth_response_model.dart';
 
@@ -26,9 +26,14 @@ class AuthRepository {
   }) async {
     final authResponse =
     await _remoteDataSource.login(email: email, password: password);
-    await _tokenStorage.saveToken(authResponse.accessToken);
+    await _tokenStorage.setTokens(
+      accessToken: authResponse.accessToken,
+      refreshToken: authResponse.refreshToken,
+    );
+
     return authResponse;
   }
+
   Future<void> forgotPassword({required String email}) {
     return _remoteDataSource.forgotPassword(email: email);
   }

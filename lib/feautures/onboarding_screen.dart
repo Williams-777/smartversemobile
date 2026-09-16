@@ -102,7 +102,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               pageCount: onboardingPages.length,
               currentPage: _currentPage,
             ),
-            const SizedBox(height: 24),
+             SizedBox(height: 24.h),
             Padding(
               padding:  EdgeInsets.symmetric(horizontal: 24.w),
               child: SizedBox(
@@ -232,7 +232,7 @@ class _DotsIndicator extends StatelessWidget {
             color: isActive
                 ? OnboardingColors.primaryOrange
                 : OnboardingColors.dotInactive,
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(4.r),
           ),
         );
       }),

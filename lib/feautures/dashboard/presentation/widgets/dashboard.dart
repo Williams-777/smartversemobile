@@ -43,7 +43,7 @@ class BottomNavBar extends StatelessWidget {
           topRight: Radius.circular(24.r),
         ),
         border: const Border(
-          top: BorderSide(color: AppColors.navColor, width: 1),
+          top: BorderSide(color: AppColors.primary, width: 1),
         ),
       ),
       child: Row(

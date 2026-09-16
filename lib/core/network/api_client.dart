@@ -1,66 +1,71 @@
 import 'package:dio/dio.dart';
+import 'package:smartversemobile/core/network/token_storage.dart';
 
 import '../error/exceptions.dart';
-import '../storage/token_storage.dart';
+
 
 class ApiClient {
-  static const String baseUrl = 'https://smart-vert-app.onrender.com';
+  static final ApiClient instance = ApiClient._();
 
-  final Dio dio;
-  final TokenStorage _tokenStorage;
+  static const baseUrl = "https://smart-vert-app.onrender.com/api/v1";
 
-  ApiClient(this._tokenStorage) : dio = Dio(BaseOptions(
-    baseUrl: baseUrl,
-    connectTimeout: const Duration(seconds: 60),
-    receiveTimeout: const Duration(seconds: 60),
-    headers: {'Content-Type': 'application/json'},
+  late final Dio dio;
 
-  )) {
+  ApiClient._() {
+    dio = Dio(BaseOptions(baseUrl: baseUrl));
     dio.interceptors.add(
       InterceptorsWrapper(
-        onRequest: (options, handler) async {
-          final token = await _tokenStorage.getToken();
+        onRequest: (options, handler) {
+          final token = TokenStorage.instance.accessToken;
           if (token != null) {
             options.headers['Authorization'] = 'Bearer $token';
           }
-          return handler.next(options);
+          handler.next(options);
         },
       ),
     );
-
-    // Logs every request/response to the console. Remove before release.
-    dio.interceptors.add(LogInterceptor(
-      requestBody: true,
-      responseBody: true,
-    ));
   }
 
-  /// Converts Dio's errors into our own exception types.
   Never handleError(Object error) {
     if (error is DioException) {
       switch (error.type) {
         case DioExceptionType.connectionTimeout:
-        case DioExceptionType.receiveTimeout:
         case DioExceptionType.sendTimeout:
-          throw const NetworkException('Connection timed out. Try again.');
+
+        case DioExceptionType.receiveTimeout:
         case DioExceptionType.connectionError:
           throw const NetworkException();
-        default:
-          throw ServerException(
-            _extractMessage(error.response?.data) ?? 'Something went wrong',
-            statusCode: error.response?.statusCode,
-          );
+
+        case DioExceptionType.badResponse:
+          final statusCode = error.response?.statusCode;
+          final message = _extractMessage(error.response?.data) ??
+              'Something went wrong. Please try again.';
+          throw ServerException(message, statusCode: statusCode);
+
+        case DioExceptionType.cancel:
+          throw const NetworkException('Request was cancelled');
+
+        case DioExceptionType.badCertificate:
+        case DioExceptionType.unknown:
+          throw const NetworkException();
+        case DioExceptionType.transformTimeout:
+          // TODO: Handle this case.
+          throw UnimplementedError();
       }
     }
-    throw const ServerException('Something went wrong');
+
+    if (error is TypeError || error is FormatException) {
+      throw const ParsingException();
+    }
+
+    throw ServerException(error.toString());
   }
 
-  /// Pulls a human-readable message out of the server's error body.
-  /// We'll adjust this once we see the actual error shape in the spec.
   String? _extractMessage(dynamic data) {
     if (data is Map<String, dynamic>) {
-      return (data['message'] ?? data['error'] ?? data['detail']) as String?;
+      return data['message'] as String? ?? data['error'] as String?;
     }
     return null;
   }
+
 }
