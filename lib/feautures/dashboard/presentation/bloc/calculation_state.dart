@@ -1,6 +1,8 @@
 
 import 'package:smartversemobile/feautures/dashboard/data/models/calculation_result.dart';
 
+import '../../data/models/calculation_detail.dart';
+
 enum CalculationStatus { idle, loading, loaded, error }
 
 class CalculationState {
@@ -10,6 +12,8 @@ class CalculationState {
     this.usageMode = "OFF_GRID",
     this.result,
     this.errorMessage,
+    this.savedCalculations = const [],
+    this.viewingDetail,
   });
 
   final CalculationStatus status;
@@ -17,6 +21,8 @@ class CalculationState {
   final String usageMode;
   final CalculationResult? result;
   final String? errorMessage;
+  final List<CalculationDetail> savedCalculations;
+  final CalculationDetail? viewingDetail;
 
   CalculationState copyWith({
     CalculationStatus? status,
@@ -24,6 +30,8 @@ class CalculationState {
     String? usageMode,
     CalculationResult? result,
     String? errorMessage,
+    List<CalculationDetail>? savedCalculations,
+    CalculationDetail? viewingDetail,
   }) {
     return CalculationState(
       status: status ?? this.status,
@@ -31,7 +39,8 @@ class CalculationState {
       usageMode: usageMode ?? this.usageMode,
       result: result ?? this.result,
       errorMessage: errorMessage,
-
+      savedCalculations: savedCalculations ?? this.savedCalculations,
+      viewingDetail: viewingDetail ?? this.viewingDetail,
     );
   }
 }

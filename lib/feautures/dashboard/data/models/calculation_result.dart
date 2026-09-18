@@ -13,18 +13,18 @@ class CalculationSummary {
 }
 
 class BatteryRecommendation {
-  final int systemVoltage;
+  final int? systemVoltage;
   final int capacityAh;
   final num energyKwh;
-  final int dodPercentage;
+  final int? dodPercentage;
 
   const BatteryRecommendation({required this.systemVoltage, required this.capacityAh, required this.energyKwh, required this.dodPercentage});
 
   factory BatteryRecommendation.fromJson(Map<String, dynamic> json) => BatteryRecommendation(
-    systemVoltage: (json['systemVoltage'] as num).toInt(),
+    systemVoltage: (json['systemVoltage'] as num?)?.toInt(),
     capacityAh: (json['capacityAh'] as num).toInt(),
     energyKwh: json['energyKwh'] as num,
-    dodPercentage: (json['dodPercentage'] as num).toInt(),
+    dodPercentage: (json['dodPercentage'] as num?)?.toInt(),
   );
 }
 
@@ -32,14 +32,14 @@ class SolarRecommendation {
   final num capacityKw;
 
   final int panelCount;
-  final int panelWatts;
+  final int? panelWatts;
 
   const SolarRecommendation({required this.capacityKw, required this.panelCount, required this.panelWatts});
 
   factory SolarRecommendation.fromJson(Map<String, dynamic> json) => SolarRecommendation(
     capacityKw: json['capacityKw'] as num,
     panelCount: (json['panelCount'] as num).toInt(),
-    panelWatts: (json['panelWatts'] as num).toInt(),
+    panelWatts: (json['panelWatts'] as num?)?.toInt(),
   );
 }
 
@@ -63,6 +63,7 @@ class BreakdownItem {
   final int wattage;
   final int runningWatts;
   final num hoursPerDay;
+
 
   final num dailyEnergyWh;
   final int surgeWatts;
@@ -95,6 +96,7 @@ class CalculationResult {
   final String calculationId;
   final String calculationVersion;
   final CalculationSummary summary;
+
   final Recommendation recommendation;
 
   final List<BreakdownItem> breakdown;

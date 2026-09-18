@@ -1,12 +1,51 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:smartversemobile/app/app_route.dart';
+import 'package:smartversemobile/core/network/token_storage.dart';
 
 import '../../../../../../../../app/theme/app_colors.dart';
 import '../../../../../../../../core/widgets/app_button.dart';
 import '../../../../../../../../core/widgets/m_text.dart';
+import '../../../../../bloc/calculation_cubit.dart';
 
-class SaveToAccountC extends StatelessWidget {
+class SaveToAccountC extends StatefulWidget {
   const SaveToAccountC({super.key});
+
+  @override
+  State<SaveToAccountC> createState() => _SaveToAccountCState();
+}
+
+class _SaveToAccountCState extends State<SaveToAccountC> {
+  bool _isSaving = false;
+  bool _isSaved = false;
+
+  Future<void> _handleSave() async {
+    if (_isSaving || _isSaved) return;
+
+    if (TokenStorage.instance.accessToken == null) {
+      Navigator.pushNamed(context, AppRoute.login);
+      return;
+    }
+
+    setState(() => _isSaving = true);
+    final id = await context.read<CalculationCubit>().saveCalculation("My Calculation");
+    if (!mounted) return;
+
+    setState(() => _isSaving = false);
+
+    if (id != null) {
+      setState(() => _isSaved = true);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Calculation saved successfully")),
+      );
+      Navigator.pushNamed(context, '/saved-calculation-detail', arguments: id);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Failed to save calculation")),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,12 +60,12 @@ class SaveToAccountC extends StatelessWidget {
           children: [
             AppButton(
               title: "Save To Account",
-              onTap: () {},
+              onTap: (_isSaving || _isSaved) ? null : () => _handleSave(),
             ),
 
             SizedBox(height: 8.h),
             InkWell(
-              onTap: () {},
+              onTap: () => Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(AppRoute.dashboardScreen, (route) => false),
               borderRadius: BorderRadius.circular(10.r),
               child: Container(
                 width: 365.w,

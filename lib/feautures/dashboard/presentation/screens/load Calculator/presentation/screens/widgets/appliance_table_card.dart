@@ -10,7 +10,8 @@ double get _dailyColWidth => 56.w;
 double get _colGap => 16.w;
 
 class ApplianceItem {
-  final String iconAsset;
+  final String? iconAsset;
+  final String? imageUrl;
   final String name;
   final String? surgeText;
   final int qty;
@@ -18,7 +19,8 @@ class ApplianceItem {
   final double dailyKWh;
 
   const ApplianceItem({
-    required this.iconAsset,
+    this.iconAsset,
+    this.imageUrl,
     required this.name,
     this.surgeText,
     required this.qty,
@@ -26,7 +28,6 @@ class ApplianceItem {
     required this.dailyKWh,
   });
 }
-
 class ApplianceTableCard extends StatelessWidget {
   final List<ApplianceItem> appliances;
 
@@ -54,6 +55,7 @@ class ApplianceTableCard extends StatelessWidget {
           for (int i = 0; i < appliances.length; i++) ...[
             _ApplianceRow(
               iconAsset: appliances[i].iconAsset,
+              imageUrl: appliances[i].imageUrl,
               name: appliances[i].name,
               surgeText: appliances[i].surgeText,
               qty: appliances[i].qty.toString(),
@@ -138,7 +140,8 @@ class _TableHeader extends StatelessWidget {
 }
 
 class _ApplianceRow extends StatelessWidget {
-  final String iconAsset;
+  final String? iconAsset;
+  final String? imageUrl;
   final String name;
   final String? surgeText;
   final String qty;
@@ -146,13 +149,15 @@ class _ApplianceRow extends StatelessWidget {
   final String daily;
 
   const _ApplianceRow({
-    required this.iconAsset,
+    this.iconAsset,
+    this.imageUrl,
     required this.name,
     this.surgeText,
     required this.qty,
     required this.watts,
     required this.daily,
   });
+
 
   @override
   Widget build(BuildContext context) {
@@ -163,13 +168,21 @@ class _ApplianceRow extends StatelessWidget {
           Container(
             width: 29.w,
             height: 31.h,
-
             decoration: const BoxDecoration(
               color: Color(0x80EAEFF5),
               shape: BoxShape.circle,
             ),
-            child: Image.asset(iconAsset),
-          ),
+        clipBehavior: Clip.antiAlias,
+        child: (imageUrl != null && imageUrl!.isNotEmpty)
+            ? Image.network(
+          imageUrl!,
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) => const Icon(Icons.devices_other, size: 16),
+        )
+            : (iconAsset != null
+            ? Image.asset(iconAsset!)
+            : const Icon(Icons.devices_other, size: 16)),
+      ),
           SizedBox(width: 6.w),
           Expanded(
             child: Column(
@@ -225,11 +238,10 @@ class _ApplianceRow extends StatelessWidget {
               textColor: AppColors.appliancestext2,
               textAlign: TextAlign.center,
             ),
-          ),
-        ],
-      ),
-    );
-
+          )
+        ]
+      )
+          );
   }
 }
 
@@ -287,13 +299,15 @@ class _TotalRow extends StatelessWidget {
           SizedBox(width: _colGap),
           SizedBox(
             width: _dailyColWidth,
-            child: MText(
-              inputText: daily,
-              weight: FontWeight.w700,
-              size: 14.spMin,
-
-              textColor: AppColors.appliancestext,
-              textAlign: TextAlign.center,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: MText(
+                inputText: daily,
+                weight: FontWeight.w700,
+                size: 14.spMin,
+                textColor: AppColors.appliancestext,
+                textAlign: TextAlign.center,
+              ),
             ),
           ),
         ],
@@ -301,3 +315,4 @@ class _TotalRow extends StatelessWidget {
     );
   }
 }
+

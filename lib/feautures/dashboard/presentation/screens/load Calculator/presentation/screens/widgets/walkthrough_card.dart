@@ -4,64 +4,84 @@ import 'package:smartversemobile/app/theme/app_colors.dart';
 import 'package:smartversemobile/core/widgets/m_text.dart';
 
 class WalkthroughCard extends StatelessWidget {
-  const WalkthroughCard({super.key});
+  const WalkthroughCard({
+    super.key,
+    required this.inverterKva,
+    required this.peakSurgeKw,
+    required this.dailyEnergyKwh,
+    required this.batteryAh,
+    required this.batteryVoltage,
+    required this.panelCount,
+    required this.panelWatts,
+  });
+
+  final num inverterKva;
+  final double peakSurgeKw;
+  final double dailyEnergyKwh;
+  final int batteryAh;
+  final int? batteryVoltage;
+  final int panelCount;
+  final int? panelWatts;
 
   @override
   Widget build(BuildContext context) {
+    final rawKva = peakSurgeKw * 1.25 / 0.8;
+    final voltageText = batteryVoltage?.toString() ?? "—";
+    final showSolarStep = panelCount > 0 && panelWatts != null;
+    final panelTotalW = showSolarStep ? panelCount * panelWatts! : 0;
+
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-      decoration: BoxDecoration(
-          color: Color(0x59FDF2EA)
-      ),
+      decoration: const BoxDecoration(color: Color(0x59FDF2EA)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _WalkthroughStep(
+
             stepNumber: 1,
             title: "INVERTER SIZE",
-            value: "3 kVA",
-            mathTexts: const [
-              "Peak surge: 1.8kW",
+            value: "${inverterKva.toStringAsFixed(0)} kVA",
+            mathTexts: [
+              "Peak surge: ${peakSurgeKw.toStringAsFixed(1)}kW",
               "× 1.25 safety margin",
               "+ 0.8 power factor",
-              "= 2.78 kVA → rounded up to 3 kVA",
+              "= ${rawKva.toStringAsFixed(2)} kVA → rounded up to ${inverterKva.toStringAsFixed(0)} kVA",
             ],
           ),
           SizedBox(height: 24.h),
           _WalkthroughStep(
             stepNumber: 2,
             title: "DAILY ENERGY",
-            value: "6.0kWh",
-            mathTexts: const [
-              "Σ (watts × qty × 6h/day) = 6.0kWh",
-            ],
+            value: "${dailyEnergyKwh.toStringAsFixed(1)}kWh",
+            mathTexts: ["Σ (watts × qty × hours/day) = ${dailyEnergyKwh.toStringAsFixed(1)}kWh"],
           ),
           SizedBox(height: 24.h),
           _WalkthroughStep(
             stepNumber: 3,
             title: "BATTERY",
-            value: "250Ah/24V",
-            mathTexts: const [
-              "6.60kWh ÷ 24h × 12h backup",
-              "÷ 0.6 (DoD limit)",
-              "÷ 24V system",
-              "= 250Ah (rounded to ×50)",
+            value: "${batteryAh}Ah/${voltageText}V",
+            mathTexts: [
+              "${dailyEnergyKwh.toStringAsFixed(2)}kWh ÷ 0.6 (DoD limit)",
+
+              "÷ ${voltageText}V system",
+              "= ${batteryAh}Ah (rounded)",
             ],
-            description:
-            "Depth of Discharge (DoD) at 60% protects battery lifespan. 24V chosen because inverter is < 3.5 kVA → 24V.",
+            description: "Depth of Discharge (DoD) at 60% protects battery lifespan. ${voltageText}V chosen based on inverter size.",
           ),
           SizedBox(height: 24.h),
-          _WalkthroughStep(
-            stepNumber: 4,
-            title: "SOLAR PANELS",
-            value: "4 × 450W panels",
-            mathTexts: const [
-              "6.0kWh ÷ (4,500 Wh × 0.85 eff)",
-              "= 1.2 kW → 4 panels of 450W",
-            ],
-            description:
-            "4.5 peak sun hours/day, with 85% efficiency to account for system losses.",
-          ),
+          if (showSolarStep)
+            _WalkthroughStep(
+
+              stepNumber: 4,
+              title: "SOLAR PANELS",
+              value: "$panelCount × ${panelWatts}W panels",
+              mathTexts: [
+                "${dailyEnergyKwh.toStringAsFixed(1)}kWh ÷ (4.5 sun hrs × 0.85 eff)",
+                "= ${(panelTotalW / 1000).toStringAsFixed(1)} kW → $panelCount panels of ${panelWatts}W",
+              ],
+              description: "4.5 peak sun hours/day, with 85% efficiency to account for system losses.",
+            ),
         ],
       ),
     );
@@ -76,6 +96,7 @@ class _WalkthroughStep extends StatelessWidget {
   final String? description;
 
   const _WalkthroughStep({
+
     required this.stepNumber,
     required this.title,
     required this.value,
@@ -108,6 +129,7 @@ class _WalkthroughStep extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+
               MText(
                 inputText: title,
                 size: 11.sp,
@@ -140,6 +162,7 @@ class _WalkthroughStep extends StatelessWidget {
                       inputText: text,
                       size: 12.sp,
                       weight: FontWeight.w400,
+
                       textColor: Color(0xff333333),
                       textAlign: TextAlign.start,
                     ),

@@ -12,7 +12,12 @@ class ApiClient {
   late final Dio dio;
 
   ApiClient._() {
-    dio = Dio(BaseOptions(baseUrl: baseUrl));
+    dio = Dio(BaseOptions(
+      baseUrl: baseUrl,
+      connectTimeout: const Duration(seconds: 15),
+      receiveTimeout: const Duration(seconds: 120),
+      sendTimeout: const Duration(seconds: 15),
+    ));
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) {
@@ -25,6 +30,7 @@ class ApiClient {
       ),
     );
   }
+
 
   Never handleError(Object error) {
     if (error is DioException) {
@@ -49,7 +55,7 @@ class ApiClient {
         case DioExceptionType.unknown:
           throw const NetworkException();
         case DioExceptionType.transformTimeout:
-          // TODO: Handle this case.
+
           throw UnimplementedError();
       }
     }
@@ -57,6 +63,7 @@ class ApiClient {
     if (error is TypeError || error is FormatException) {
       throw const ParsingException();
     }
+
 
     throw ServerException(error.toString());
   }

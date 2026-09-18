@@ -30,6 +30,7 @@ class AppButton extends StatelessWidget {
         child: Center(
           child: child ??
               MText(
+
                 inputText: title?? "Continue",
                 size: 18.spMin,
                 weight: .w600,

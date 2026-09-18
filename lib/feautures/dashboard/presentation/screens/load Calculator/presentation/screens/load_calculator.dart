@@ -26,6 +26,7 @@ class LoadCalculator extends StatefulWidget {
 class _LoadCalculatorState extends State<LoadCalculator> {
   PowerMode? selectedMode = PowerMode.offGridSolar;
   int selectedHours = 6;
+  bool _isCalculating = false;
 
   @override
   Widget build(BuildContext context) {
@@ -115,18 +116,37 @@ class _LoadCalculatorState extends State<LoadCalculator> {
                       child: Center(
                         child: AppButton(
                           title: "Calculate my system",
-                          onTap: () async {
+                          onTap: _isCalculating
+                              ? null
+                              : () async {
+                            setState(() => _isCalculating = true);
                             final calcCubit = context.read<CalculationCubit>();
                             calcCubit.setBackupHours(selectedHours);
                             calcCubit.setUsageMode(selectedMode == PowerMode.offGridSolar ? "OFF_GRID" : "BACKUP");
-                            await calcCubit.calculate(applianceState);
-                            if (!context.mounted) return;
-                            if (selectedMode == PowerMode.offGridSolar) {
-                              Navigator.pushNamed(context, AppRoute.calculated);
-                            } else {
-                              Navigator.pushNamed(context, AppRoute.loadCalculatorBackupOnly);
+                            try {
+                              await calcCubit.calculate(applianceState);
+                              if (!context.mounted) return;
+                              if (selectedMode == PowerMode.offGridSolar) {
+                                Navigator.pushNamed(context, AppRoute.calculated);
+                              } else {
+                                Navigator.pushNamed(context, AppRoute.loadCalculatorBackupOnly);
+                              }
+                            } finally {
+                              if (context.mounted) {
+                                setState(() => _isCalculating = false);
+                              }
                             }
                           },
+                          child: _isCalculating
+                              ? SizedBox(
+                            height: 20.h,
+                            width: 20.h,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.5,
+                              color: AppColors.main,
+                            ),
+                          )
+                              : null,
                         ),
                       ),
                     ),

@@ -45,13 +45,42 @@ class CalculationCubit extends Cubit<CalculationState> {
     }
   }
 
-  Future<bool> saveCalculation(String label) async {
-    if (state.result == null) return false;
+  Future<String?> saveCalculation(String label) async {
+    if (state.result == null) return null;
     try {
-      await _repository.saveCalculation(calculationId: state.result!.calculationId, label: label);
-      return true;
+      return await _repository.saveCalculation(calculationId: state.result!.calculationId, label: label);
     } catch (e) {
       debugPrint("Save calculation failed: $e");
+      return null;
+    }
+  }
+
+  Future<void> loadSavedCalculations() async {
+    try {
+      final list = await _repository.getSavedCalculations();
+      emit(state.copyWith(savedCalculations: list));
+    } catch (e) {
+      debugPrint("Loading saved calculations failed: $e");
+    }
+  }
+
+  Future<void> loadSavedCalculationDetail(String id) async {
+    try {
+      final detail = await _repository.getSavedCalculationDetail(id);
+      emit(state.copyWith(viewingDetail: detail));
+    } catch (e) {
+      debugPrint("Loading calculation detail failed: $e");
+    }
+  }
+
+  Future<bool> deleteCalculation(String id) async {
+    try {
+      await _repository.deleteCalculation(id);
+      final updated = state.savedCalculations.where((c) => c.id != id).toList();
+      emit(state.copyWith(savedCalculations: updated));
+      return true;
+    } catch (e) {
+      debugPrint("Delete calculation failed: $e");
       return false;
     }
   }
