@@ -92,9 +92,8 @@ class CalculatedScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 24.h),
                   SaveAndShareC(
-                    onSaveAndShare: () async {
-                      await context.read<CalculationCubit>().saveCalculation("My system");
-                    },
+                    onSaveAndShare: () =>
+                        context.read<CalculationCubit>().saveCalculation("My system"),
                     onShowMaths: () => Navigator.pushNamed(context, AppRoute.showMaths),
                   ),
                 ],

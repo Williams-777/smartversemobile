@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:smartversemobile/app/app_route.dart';
-import 'dashboard/dashboard_screen.dart';
+import 'package:smartversemobile/core/storage/onboarding_storage.dart';
 import 'onboarding_screen.dart';
 
 class SplashColors {
@@ -25,11 +25,10 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     Future.delayed(const Duration(seconds: 4), () {
       if (!mounted) return;
-      Navigator.pushReplacementNamed(
-        context, AppRoute.onboarding
-
-
-      );
+      final next = OnboardingStorage.instance.hasSeenOnboarding
+          ? AppRoute.dashboardScreen
+          : AppRoute.onboarding;
+      Navigator.pushReplacementNamed(context, next);
     });
 
   }

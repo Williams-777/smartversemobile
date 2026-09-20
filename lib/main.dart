@@ -9,11 +9,13 @@ import 'feautures/dashboard/data/repository/appliance_repository.dart';
 import 'feautures/dashboard/data/repository/calculation_repository.dart';
 import 'feautures/dashboard/presentation/bloc/appliance_cubit.dart';
 import 'feautures/dashboard/presentation/bloc/calculation_cubit.dart';
+import 'core/storage/onboarding_storage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   setupServiceLocator();
   await TokenStorage.instance.init();
+  await OnboardingStorage.instance.init();
   runApp(const MyApp());
 }
 

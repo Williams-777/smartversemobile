@@ -1,38 +1,58 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-class TokenStorage {
+class TokenStorage extends ChangeNotifier {
   TokenStorage._();
   static final TokenStorage instance = TokenStorage._();
 
   static const _accessTokenKey = 'access_token';
   static const _refreshTokenKey = 'refresh_token';
+  static const _fullNameKey = 'full_name';
+  static const _emailKey = 'email';
 
   final _storage = const FlutterSecureStorage();
 
   String? _accessToken;
   String? _refreshToken;
+  String? _fullName;
+  String? _email;
 
   String? get accessToken => _accessToken;
   String? get refreshToken => _refreshToken;
+  String? get fullName => _fullName;
+  String? get email => _email;
+  bool get isSignedIn => _accessToken != null;
 
   Future<void> init() async {
     _accessToken = await _storage.read(key: _accessTokenKey);
     _refreshToken = await _storage.read(key: _refreshTokenKey);
+    _fullName = await _storage.read(key: _fullNameKey);
+    _email = await _storage.read(key: _emailKey);
   }
 
   Future<void> setTokens({
     required String accessToken,
     required String refreshToken,
+    required String fullName,
+    required String email,
   }) async {
     _accessToken = accessToken;
     _refreshToken = refreshToken;
+    _fullName = fullName;
+    _email = email;
     await _storage.write(key: _accessTokenKey, value: accessToken);
     await _storage.write(key: _refreshTokenKey, value: refreshToken);
+    await _storage.write(key: _fullNameKey, value: fullName);
+    await _storage.write(key: _emailKey, value: email);
+    notifyListeners();
   }
 
   Future<void> clear() async {
     _accessToken = null;
     _refreshToken = null;
+    _fullName = null;
+    _email = null;
     await _storage.deleteAll();
+    notifyListeners();
   }
 }

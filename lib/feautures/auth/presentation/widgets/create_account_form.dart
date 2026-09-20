@@ -5,7 +5,7 @@ import 'package:smartversemobile/feautures/auth/presentation/cubit/register_stat
 import 'package:smartversemobile/feautures/auth/presentation/widgets/auth_submit_button.dart';
 import 'package:smartversemobile/feautures/auth/presentation/widgets/auth_text_field.dart';
 import 'package:smartversemobile/feautures/auth/presentation/widgets/password_strength_bar.dart';
-import 'package:smartversemobile/feautures/auth/presentation/widgets/verification_email_sheet.dart';
+import 'package:smartversemobile/feautures/auth/presentation/screens/email_verification_screen.dart';
 
 class CreateAccountForm extends StatefulWidget {
   const CreateAccountForm({super.key});
@@ -43,7 +43,12 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
     return BlocConsumer<RegisterCubit, RegisterState>(
       listener: (context, state) {
         if (state is RegisterSuccess) {
-          VerificationEmailSheet.show(context, email: _emailController.text.trim());
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => EmailVerificationScreen(email: _emailController.text.trim()),
+            ),
+          );
         } else if (state is RegisterFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.message)),

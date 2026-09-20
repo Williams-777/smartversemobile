@@ -5,4 +5,5 @@ class ApiEndpoints {
   static const login = '/auth/login';
   static const forgotPassword = '/auth/forgot-password';
   static const resendVerification = '/auth/resend-verification';
+  static const verifyEmail = '/auth/verify-email';
 }

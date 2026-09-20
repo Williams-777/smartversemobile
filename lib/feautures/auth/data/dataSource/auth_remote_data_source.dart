@@ -53,4 +53,12 @@ class AuthRemoteDataSource {
       _apiClient.handleError(e);
     }
   }
+
+  Future<void> verifyEmail({required String token}) async {
+    try {
+      await _apiClient.dio.post(ApiEndpoints.verifyEmail, data: {'token': token});
+    } catch (e) {
+      _apiClient.handleError(e);
+    }
+  }
 }
