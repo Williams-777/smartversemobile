@@ -12,6 +12,9 @@ class RegisterCubit extends Cubit<RegisterState> {
     required String fullName,
     required String email,
     required String password,
+    String? userType,
+    String? state,
+    String? phoneNumber,
   }) async {
     emit(RegisterLoading());
     try {
@@ -19,6 +22,9 @@ class RegisterCubit extends Cubit<RegisterState> {
         fullName: fullName,
         email: email,
         password: password,
+        userType: userType,
+        state: state,
+        phoneNumber: phoneNumber,
       );
       emit(RegisterSuccess());
     } on ServerException catch (e) {

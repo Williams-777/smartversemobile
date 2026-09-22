@@ -53,7 +53,7 @@ class _EmailVerificationViewState extends State<_EmailVerificationView> {
 
   void _handleVerify() {
     if (_code.length != _codeLength) return;
-    context.read<VerifyEmailCubit>().verify(token: _code);
+    context.read<VerifyEmailCubit>().verify(email: widget.email, otp: _code);
   }
 
   @override

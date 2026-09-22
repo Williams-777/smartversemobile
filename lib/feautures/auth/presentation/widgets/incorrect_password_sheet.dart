@@ -10,15 +10,23 @@ import 'forgot_password_sheet.dart';
 
 class IncorrectPasswordSheet extends StatelessWidget {
   final String email;
+  final int attemptsLeft;
 
-  const IncorrectPasswordSheet({super.key, required this.email});
+  static int _remainingAttempts = 4;
+
+  const IncorrectPasswordSheet({super.key, required this.email, required this.attemptsLeft});
 
   static void show(BuildContext context, {required String email}) {
+    final currentAttempts = _remainingAttempts;
+    if (_remainingAttempts > 0) {
+      _remainingAttempts--;
+    }
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => IncorrectPasswordSheet(email: email),
+      builder: (_) => IncorrectPasswordSheet(email: email, attemptsLeft: currentAttempts),
     );
   }
 
@@ -61,17 +69,19 @@ class IncorrectPasswordSheet extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.circle, size: 8, color: Colors.red),
-              const SizedBox(width: 4),
-              Icon(Icons.circle, size: 8, color: Colors.grey.shade400),
-              const SizedBox(width: 4),
-              Icon(Icons.circle, size: 8, color: Colors.grey.shade400),
-              const SizedBox(width: 4),
-              Icon(Icons.circle, size: 8, color: Colors.grey.shade400),
-              const SizedBox(width: 4),
-              Icon(Icons.circle, size: 8, color: Colors.grey.shade400),
-              const SizedBox(width: 10),
-              const Text("4 attempts left", style: TextStyle(color: AppColors.primary, fontSize: 12)),
+              ...List.generate(5, (index) {
+                final isUsed = index < (5 - attemptsLeft);
+                return Padding(
+                  padding: const EdgeInsets.only(right: 4),
+                  child: Icon(
+                    Icons.circle,
+                    size: 8,
+                    color: isUsed ? Colors.red : Colors.grey.shade400,
+                  ),
+                );
+              }),
+              const SizedBox(width: 6),
+              Text("$attemptsLeft attempt${attemptsLeft == 1 ? '' : 's'} left", style: const TextStyle(color: AppColors.primary, fontSize: 12)),
             ],
           ),
           const SizedBox(height: 20),

@@ -30,18 +30,26 @@ class TokenStorage extends ChangeNotifier {
     _email = await _storage.read(key: _emailKey);
   }
 
+  /// Stores the access/refresh tokens returned by login. Login no longer
+  /// returns user details, so call [setUserInfo] separately once the
+  /// profile has been fetched.
   Future<void> setTokens({
     required String accessToken,
     required String refreshToken,
-    required String fullName,
-    required String email,
   }) async {
     _accessToken = accessToken;
     _refreshToken = refreshToken;
-    _fullName = fullName;
-    _email = email;
     await _storage.write(key: _accessTokenKey, value: accessToken);
     await _storage.write(key: _refreshTokenKey, value: refreshToken);
+    notifyListeners();
+  }
+
+  Future<void> setUserInfo({
+    required String fullName,
+    required String email,
+  }) async {
+    _fullName = fullName;
+    _email = email;
     await _storage.write(key: _fullNameKey, value: fullName);
     await _storage.write(key: _emailKey, value: email);
     notifyListeners();

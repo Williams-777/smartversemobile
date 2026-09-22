@@ -8,10 +8,10 @@ class VerifyEmailCubit extends Cubit<VerifyEmailState> {
 
   VerifyEmailCubit(this._authRepository) : super(VerifyEmailInitial());
 
-  Future<void> verify({required String token}) async {
+  Future<void> verify({required String email, required String otp}) async {
     emit(VerifyEmailLoading());
     try {
-      await _authRepository.verifyEmail(token: token);
+      await _authRepository.verifyEmail(email: email, otp: otp);
       emit(VerifyEmailSuccess());
     } on ServerException catch (e) {
       emit(VerifyEmailFailure(e.message));
