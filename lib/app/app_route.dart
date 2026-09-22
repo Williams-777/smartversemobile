@@ -8,7 +8,7 @@ import 'package:smartversemobile/feautures/splash_screen.dart';
 import 'package:smartversemobile/feautures/auth/presentation/screens/create_account.dart';
 import 'package:smartversemobile/feautures/auth/presentation/screens/create_account_success.dart';
 import 'package:smartversemobile/feautures/auth/presentation/screens/login_screen.dart';
-
+import 'package:smartversemobile/core/storage/onboarding_storage.dart';
 import '../feautures/dashboard/dashboard_screen.dart';
 import '../feautures/dashboard/presentation/screens/load Calculator/presentation/screens/calculated.dart';
 import '../feautures/onboarding_screen.dart';
@@ -31,9 +31,11 @@ class AppRoute {
     splash: (context) => SplashScreen(
       onOnboardingFinish: () {},
     ),
-    onboarding: (context) => OnboardingScreen(onFinish: (BuildContext context) {
+    onboarding: (context) => OnboardingScreen(onFinish: (context) async {
+      await OnboardingStorage.instance.markSeen();
+      if (!context.mounted) return;
       Navigator.pushReplacementNamed(context, AppRoute.dashboardScreen);
-    },),
+    }),
     dashboardScreen: (context) => const DashboardScreen(),
     kitchenScreen: (context) => const KitchenScreen(),
     calculated: (context) => const CalculatedScreen(),

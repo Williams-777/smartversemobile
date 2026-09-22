@@ -29,6 +29,8 @@ class AuthRepository {
     await _tokenStorage.setTokens(
       accessToken: authResponse.accessToken,
       refreshToken: authResponse.refreshToken,
+      fullName: authResponse.fullName,
+      email: authResponse.email,
     );
 
     return authResponse;
@@ -40,5 +42,8 @@ class AuthRepository {
 
   Future<void> resendVerification({required String email}) {
     return _remoteDataSource.resendVerification(email: email);
+  }
+  Future<void> verifyEmail({required String token}) {
+    return _remoteDataSource.verifyEmail(token: token);
   }
 }
