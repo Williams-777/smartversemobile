@@ -6,6 +6,7 @@ import 'package:smartversemobile/feautures/auth/presentation/cubit/forgot_passwo
 import 'package:smartversemobile/feautures/auth/presentation/cubit/forgot_password_state.dart';
 import 'package:smartversemobile/feautures/auth/presentation/widgets/sheet_action_button.dart';
 import 'package:smartversemobile/feautures/auth/presentation/widgets/sheet_close_button.dart';
+import 'package:smartversemobile/feautures/auth/presentation/widgets/reset_password_sheet.dart';
 
 class ForgotPasswordSheet extends StatefulWidget {
   final String? initialEmail;
@@ -51,10 +52,12 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
     return BlocConsumer<ForgotPasswordCubit, ForgotPasswordState>(
       listener: (context, state) {
         if (state is ForgotPasswordSuccess) {
+          final email = _emailController.text.trim();
           Navigator.pop(context);
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Reset link sent — check your email')),
+            const SnackBar(content: Text('Reset code sent — check your email')),
           );
+          ResetPasswordSheet.show(context, email: email);
         } else if (state is ForgotPasswordFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.message)),
@@ -82,7 +85,7 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 10),
                 child: Text(
-                  "No problem. Enter your email and we'll send a reset\nlink valid for 15 minutes.",
+                  "No problem. Enter your email and we'll send you a\n6-digit code to reset your password.",
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 14, color: AppColors.grey700),
                 ),
@@ -102,7 +105,7 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
               ),
               const SizedBox(height: 30),
               SheetActionButton(
-                text: isLoading ? "Sending..." : "Send reset link",
+                text: isLoading ? "Sending..." : "Send reset code",
                 onPressed: isLoading
                     ? () {}
                     : () {

@@ -1,6 +1,7 @@
 import '../../../../core/network/api_client.dart';
 import '../../../../core/network/api_endpoints.dart';
 import '../models/auth_response_model.dart';
+import '../models/user_response_model.dart';
 
 class AuthRemoteDataSource {
   final ApiClient _apiClient;
@@ -11,12 +12,18 @@ class AuthRemoteDataSource {
     required String fullName,
     required String email,
     required String password,
+    String? userType,
+    String? state,
+    String? phoneNumber,
   }) async {
     try {
       await _apiClient.dio.post(ApiEndpoints.register, data: {
         'fullName': fullName,
         'email': email,
         'password': password,
+        if (userType != null) 'userType': userType,
+        if (state != null) 'state': state,
+        if (phoneNumber != null) 'phoneNumber': phoneNumber,
       });
     } catch (e) {
       _apiClient.handleError(e);
@@ -38,9 +45,36 @@ class AuthRemoteDataSource {
       _apiClient.handleError(e);
     }
   }
+
+  Future<UserResponseModel> getProfile() async {
+    try {
+      final response = await _apiClient.dio.get(ApiEndpoints.userProfile);
+      final data = response.data['data'] as Map<String, dynamic>;
+      return UserResponseModel.fromJson(data);
+    } catch (e) {
+      _apiClient.handleError(e);
+    }
+  }
+
   Future<void> forgotPassword({required String email}) async {
     try {
       await _apiClient.dio.post(ApiEndpoints.forgotPassword, data: {'email': email});
+    } catch (e) {
+      _apiClient.handleError(e);
+    }
+  }
+
+  Future<void> resetPassword({
+    required String email,
+    required String otp,
+    required String newPassword,
+  }) async {
+    try {
+      await _apiClient.dio.post(ApiEndpoints.resetPassword, data: {
+        'email': email,
+        'otp': otp,
+        'newPassword': newPassword,
+      });
     } catch (e) {
       _apiClient.handleError(e);
     }
@@ -54,9 +88,10 @@ class AuthRemoteDataSource {
     }
   }
 
-  Future<void> verifyEmail({required String token}) async {
+
+  Future<void> verifyEmail({required String email, required String otp}) async {
     try {
-      await _apiClient.dio.post(ApiEndpoints.verifyEmail, data: {'token': token});
+      await _apiClient.dio.post(ApiEndpoints.verifyEmail, data: {'email': email, 'otp': otp});
     } catch (e) {
       _apiClient.handleError(e);
     }
