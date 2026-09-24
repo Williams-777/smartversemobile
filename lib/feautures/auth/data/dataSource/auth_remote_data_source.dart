@@ -96,4 +96,12 @@ class AuthRemoteDataSource {
       _apiClient.handleError(e);
     }
   }
+
+  Future<void> deleteAccount() async {
+    try {
+      await _apiClient.dio.delete(ApiEndpoints.deleteAccount);
+    } catch (e) {
+      _apiClient.handleError(e);
+    }
+  }
 }

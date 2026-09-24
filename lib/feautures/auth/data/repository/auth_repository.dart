@@ -78,4 +78,11 @@ class AuthRepository {
   Future<void> verifyEmail({required String email, required String otp}) {
     return _remoteDataSource.verifyEmail(email: email, otp: otp);
   }
+
+  /// Deletes the signed-in user's account on the server, then clears the
+  /// locally stored tokens/profile so the app drops back to signed-out.
+  Future<void> deleteAccount() async {
+    await _remoteDataSource.deleteAccount();
+    await _tokenStorage.clear();
+  }
 }

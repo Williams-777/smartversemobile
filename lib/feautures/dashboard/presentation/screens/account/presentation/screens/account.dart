@@ -3,7 +3,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:smartversemobile/app/app_route.dart';
 import 'package:smartversemobile/app/theme/app_colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:smartversemobile/core/di/service_locator.dart';
 import 'package:smartversemobile/core/network/token_storage.dart';
+import 'package:smartversemobile/feautures/auth/data/repository/auth_repository.dart';
 import 'package:smartversemobile/feautures/auth/presentation/widgets/auth_submit_button.dart';
 
 class Account extends StatelessWidget {
@@ -282,7 +284,7 @@ class _SignedInScreen extends StatelessWidget {
           ),
           SizedBox(height: 24.h),
           GestureDetector(
-            onTap: () {},
+            onTap: () => _confirmAndDeleteAccount(context),
             child: Container(
               width: double.infinity,
               padding: EdgeInsets.symmetric(vertical: 16.h),
@@ -384,6 +386,51 @@ class _SignedInScreen extends StatelessWidget {
 
   Widget _buildDivider() {
     return Divider(height: 1, thickness: 1, color: Colors.grey.withOpacity(0.1), indent: 16.w, endIndent: 16.w);
+  }
+
+  Future<void> _confirmAndDeleteAccount(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text("Delete account"),
+        content: const Text(
+          "This permanently deletes your account and all saved data. This can't be undone.",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text("Delete", style: TextStyle(color: Colors.red.shade700)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !context.mounted) return;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+
+    try {
+      await getIt<AuthRepository>().deleteAccount();
+      if (!context.mounted) return;
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Your account has been deleted")),
+      );
+    } catch (e) {
+      if (!context.mounted) return;
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
+    }
   }
 }
 
