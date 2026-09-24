@@ -10,6 +10,8 @@ import 'package:smartversemobile/feautures/dashboard/presentation/bloc/calculati
 import 'package:smartversemobile/feautures/dashboard/presentation/bloc/calculation_state.dart';
 import 'package:smartversemobile/feautures/dashboard/data/models/calculation_detail.dart';
 
+import '../widgets/solar_j.dart';
+
 class Account extends StatelessWidget {
   const Account({super.key});
 
@@ -82,7 +84,6 @@ class _SignedInScreenState extends State<_SignedInScreen> {
                   color: AppColors.white2,
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.share_outlined, size: 20.sp, color: AppColors.grey400),
               ),
             ],
           ),
@@ -142,43 +143,11 @@ class _SignedInScreenState extends State<_SignedInScreen> {
                     ],
                   ),
                 ),
-                Icon(Icons.chevron_right, color: AppColors.grey400),
               ],
             ),
           ),
           SizedBox(height: 24.h),
-          Container(
-            padding: EdgeInsets.all(16.w),
-            decoration: BoxDecoration(
-              color: AppColors.googleBgCreate,
-              border: Border.all(color: AppColors.primary.withOpacity(0.2)),
-              borderRadius: BorderRadius.circular(16.r),
-            ),
-            child: Row(
-              children: [
-                SvgPicture.asset('assets/icons/noto-v1_sun.svg', width: 32.sp, height: 32.sp),
-                SizedBox(width: 16.w),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Your Solar Journey",
-                        style: TextStyle(color: AppColors.appliancestext2, fontSize: 15.sp, fontWeight: FontWeight.w700),
-                      ),
-                      SizedBox(height: 4.h),
-                      Text(
-                        "Get personalized recommendations based on your power needs and location.",
-                        style: TextStyle(color: AppColors.grey700, fontSize: 12.sp, height: 1.3),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(width: 8.w),
-                Icon(Icons.chevron_right, color: AppColors.grey600),
-              ],
-            ),
-          ),
+          SolarJC(),
           SizedBox(height: 24.h),
           BlocBuilder<CalculationCubit, CalculationState>(
             builder: (context, state) {
@@ -410,6 +379,8 @@ class _SignedInScreenState extends State<_SignedInScreen> {
     return Divider(height: 1, thickness: 1, color: Colors.grey.withOpacity(0.1), indent: 16.w, endIndent: 16.w);
   }
 }
+
+
 
 class _SignedOutScreen extends StatelessWidget {
   const _SignedOutScreen();
