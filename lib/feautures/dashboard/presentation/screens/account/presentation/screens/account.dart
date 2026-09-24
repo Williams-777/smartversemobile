@@ -7,6 +7,12 @@ import 'package:smartversemobile/core/di/service_locator.dart';
 import 'package:smartversemobile/core/network/token_storage.dart';
 import 'package:smartversemobile/feautures/auth/data/repository/auth_repository.dart';
 import 'package:smartversemobile/feautures/auth/presentation/widgets/auth_submit_button.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:smartversemobile/feautures/dashboard/presentation/bloc/calculation_cubit.dart';
+import 'package:smartversemobile/feautures/dashboard/presentation/bloc/calculation_state.dart';
+import 'package:smartversemobile/feautures/dashboard/data/models/calculation_detail.dart';
+
+import '../widgets/solar_j.dart';
 
 class Account extends StatelessWidget {
   const Account({super.key});
@@ -30,8 +36,19 @@ class Account extends StatelessWidget {
   }
 }
 
-class _SignedInScreen extends StatelessWidget {
+class _SignedInScreen extends StatefulWidget {
   const _SignedInScreen();
+
+  @override
+  State<_SignedInScreen> createState() => _SignedInScreenState();
+}
+
+class _SignedInScreenState extends State<_SignedInScreen> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<CalculationCubit>().loadSavedCalculations();
+  }
 
   String _getInitials(String? name) {
     if (name == null || name.isEmpty) return "U";
@@ -69,7 +86,6 @@ class _SignedInScreen extends StatelessWidget {
                   color: AppColors.white2,
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.share_outlined, size: 20.sp, color: AppColors.grey400),
               ),
             ],
           ),
@@ -129,100 +145,77 @@ class _SignedInScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-                Icon(Icons.chevron_right, color: AppColors.grey400),
               ],
             ),
           ),
           SizedBox(height: 24.h),
-          Container(
-            padding: EdgeInsets.all(16.w),
-            decoration: BoxDecoration(
-              color: AppColors.googleBgCreate,
-              border: Border.all(color: AppColors.primary.withOpacity(0.2)),
-              borderRadius: BorderRadius.circular(16.r),
-            ),
-            child: Row(
-              children: [
-                SvgPicture.asset('assets/icons/noto-v1_sun.svg', width: 32.sp, height: 32.sp),
-                SizedBox(width: 16.w),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Your Solar Journey",
-                        style: TextStyle(color: AppColors.appliancestext2, fontSize: 15.sp, fontWeight: FontWeight.w700),
-                      ),
-                      SizedBox(height: 4.h),
-                      Text(
-                        "Get personalized recommendations based on your power needs and location.",
-                        style: TextStyle(color: AppColors.grey700, fontSize: 12.sp, height: 1.3),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(width: 8.w),
-                Icon(Icons.chevron_right, color: AppColors.grey600),
-              ],
-            ),
-          ),
+          SolarJC(),
           SizedBox(height: 24.h),
-          Container(
-            padding: EdgeInsets.all(16.w),
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              border: Border.all(color: Colors.grey.withOpacity(0.2)),
-              borderRadius: BorderRadius.circular(16.r),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "Recent Calculations",
-                      style: TextStyle(color: AppColors.appliancestext, fontSize: 14.sp, fontWeight: FontWeight.w800),
-                    ),
-                    Text(
-                      "1 saved",
-                      style: TextStyle(color: AppColors.primary, fontSize: 12.sp, fontWeight: FontWeight.w600),
-                    ),
-                  ],
+          BlocBuilder<CalculationCubit, CalculationState>(
+            builder: (context, state) {
+              final recentCalculations = state.savedCalculations;
+              if (recentCalculations.isEmpty) {
+                return const SizedBox.shrink();
+              }
+              final recent = recentCalculations.first;
+              return Container(
+                padding: EdgeInsets.all(16.w),
+                decoration: BoxDecoration(
+                  color: AppColors.white,
+                  border: Border.all(color: Colors.grey.withOpacity(0.2)),
+                  borderRadius: BorderRadius.circular(16.r),
                 ),
-                SizedBox(height: 16.h),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text("Profile 1", style: TextStyle(color: AppColors.appliancestext, fontSize: 14.sp, fontWeight: FontWeight.w700)),
-                          SizedBox(height: 4.h),
-                          Text("2 appliances · Off-grid", style: TextStyle(color: AppColors.grey400, fontSize: 12.sp)),
-                        ],
-                      ),
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        RichText(
-                          text: TextSpan(
+                        Text(
+                          "Recent Calculations",
+                          style: TextStyle(color: AppColors.appliancestext, fontSize: 14.sp, fontWeight: FontWeight.w800),
+                        ),
+                        Text(
+                          "${recentCalculations.length} saved",
+                          style: TextStyle(color: AppColors.primary, fontSize: 12.sp, fontWeight: FontWeight.w600),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 16.h),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              TextSpan(text: "3", style: TextStyle(color: AppColors.primary, fontSize: 16.sp, fontWeight: FontWeight.bold)),
-                              TextSpan(text: "kVA", style: TextStyle(color: AppColors.appliancestext, fontSize: 12.sp, fontWeight: FontWeight.bold)),
+                              Text(recent.label, style: TextStyle(color: AppColors.appliancestext, fontSize: 14.sp, fontWeight: FontWeight.w700)),
+                              SizedBox(height: 4.h),
+                              Text("${recent.distinctApplianceCount} appliances · ${recent.modeText}", style: TextStyle(color: AppColors.grey400, fontSize: 12.sp)),
                             ],
                           ),
                         ),
-                        SizedBox(height: 4.h),
-                        Text("250Ah · 4pcs", style: TextStyle(color: AppColors.grey400, fontSize: 11.sp)),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(text: recent.result.recommendation.inverterKva.toStringAsFixed(0), style: TextStyle(color: AppColors.primary, fontSize: 16.sp, fontWeight: FontWeight.bold)),
+                                  TextSpan(text: "kVA", style: TextStyle(color: AppColors.appliancestext, fontSize: 12.sp, fontWeight: FontWeight.bold)),
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: 4.h),
+                            Text("${recent.result.recommendation.battery.capacityAh}Ah" + (recent.result.recommendation.solar.panelCount > 0 ? " · ${recent.result.recommendation.solar.panelCount} pnl" : ""), style: TextStyle(color: AppColors.grey400, fontSize: 11.sp)),
+                          ],
+                        ),
                       ],
                     ),
                   ],
                 ),
-              ],
-            ),
+              );
+            },
           ),
           SizedBox(height: 24.h),
           Container(
@@ -246,7 +239,7 @@ class _SignedInScreen extends StatelessWidget {
                   iconBgColor: AppColors.usagePatternContainer,
                   title: "My Location",
                   subtitle: "Update your address and location",
-                  onTap: () {},
+                  onTap: () {Navigator.pushNamed(context, AppRoute.location);},
                 ),
                 _buildDivider(),
                 _buildMenuItem(
@@ -270,7 +263,7 @@ class _SignedInScreen extends StatelessWidget {
                   iconBgColor: AppColors.googleBgCreate,
                   title: "Help & Support",
                   subtitle: "FAQs, contact us and more",
-                  onTap: () {},
+                  onTap: () {Navigator.pushNamed(context, AppRoute.helpSupport);},
                 ),
                 _buildDivider(),
                 _buildMenuItem(
@@ -300,7 +293,7 @@ class _SignedInScreen extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 40.h), // Extra padding for scroll
+          SizedBox(height: 40.h),
         ],
       ),
     );
@@ -433,6 +426,8 @@ class _SignedInScreen extends StatelessWidget {
     }
   }
 }
+
+
 
 class _SignedOutScreen extends StatelessWidget {
   const _SignedOutScreen();
