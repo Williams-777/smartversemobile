@@ -105,9 +105,21 @@ class AuthRemoteDataSource {
     }
   }
 
-  // There is no update-profile endpoint in the current Swagger spec —
-  // user-controller only exposes GET /user/profile and DELETE /user/delete.
-  // Once the backend adds one (PATCH /api/v1/user/profile is the natural
-  // fit, matching the PATCH used for updateLabel/updateStatus elsewhere in
-  // the spec), wire it here and remove EditProfileScreen's local-only save.
+  /// PATCH /api/v1/user/profile — only fullName/phoneNumber are editable;
+  /// omit a field to leave it unchanged server-side.
+  Future<UserResponseModel> updateProfile({
+    String? fullName,
+    String? phoneNumber,
+  }) async {
+    try {
+      final response = await _apiClient.dio.patch(ApiEndpoints.userProfile, data: {
+        if (fullName != null) 'fullName': fullName,
+        if (phoneNumber != null) 'phoneNumber': phoneNumber,
+      });
+      final data = response.data['data'] as Map<String, dynamic>;
+      return UserResponseModel.fromJson(data);
+    } catch (e) {
+      _apiClient.handleError(e);
+    }
+  }
 }
