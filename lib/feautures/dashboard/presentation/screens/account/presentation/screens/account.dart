@@ -122,26 +122,28 @@ class _SignedInScreenState extends State<_SignedInScreen> {
                         email,
                         style: TextStyle(color: AppColors.appliancestext2.withOpacity(0.7), fontSize: 13.sp),
                       ),
-                      SizedBox(height: 6.h),
-                      Container(
-                        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                        decoration: BoxDecoration(
-                          color: AppColors.successGreen.withOpacity(0.1),
-                          border: Border.all(color: AppColors.successGreen.withOpacity(0.5)),
-                          borderRadius: BorderRadius.circular(20.r),
+                      if (TokenStorage.instance.isEmailVerified) ...[
+                        SizedBox(height: 6.h),
+                        Container(
+                          padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                          decoration: BoxDecoration(
+                            color: AppColors.successGreen.withOpacity(0.1),
+                            border: Border.all(color: AppColors.successGreen.withOpacity(0.5)),
+                            borderRadius: BorderRadius.circular(20.r),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.check, size: 12.sp, color: AppColors.successGreen),
+                              SizedBox(width: 4.w),
+                              Text(
+                                "Verified",
+                                style: TextStyle(color: AppColors.successGreen, fontSize: 10.sp, fontWeight: FontWeight.w600),
+                              ),
+                            ],
+                          ),
                         ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.check, size: 12.sp, color: AppColors.successGreen),
-                            SizedBox(width: 4.w),
-                            Text(
-                              "Verified",
-                              style: TextStyle(color: AppColors.successGreen, fontSize: 10.sp, fontWeight: FontWeight.w600),
-                            ),
-                          ],
-                        ),
-                      ),
+                      ],
                     ],
                   ),
                 ),
@@ -327,19 +329,19 @@ class _SignedInScreenState extends State<_SignedInScreen> {
                 alignment: Alignment.center,
                 child: imageAsset != null
                     ? Image.asset(
-                        imageAsset,
-                        width: 22.sp,
-                        height: 22.sp,
-                        color: iconColor,
-                      )
+                  imageAsset,
+                  width: 22.sp,
+                  height: 22.sp,
+                  color: iconColor,
+                )
                     : SvgPicture.asset(
-                        svgAsset!,
-                        width: 22.sp,
-                        height: 22.sp,
-                        colorFilter: iconColor != null
-                            ? ColorFilter.mode(iconColor, BlendMode.srcIn)
-                            : null,
-                      ),
+                  svgAsset!,
+                  width: 22.sp,
+                  height: 22.sp,
+                  colorFilter: iconColor != null
+                      ? ColorFilter.mode(iconColor, BlendMode.srcIn)
+                      : null,
+                ),
               ),
               SizedBox(width: 16.w),
             ],

@@ -46,6 +46,7 @@ class AuthRepository {
     await _tokenStorage.setUserInfo(
       fullName: profile.fullName,
       email: profile.email,
+      isEmailVerified: profile.isEmailVerified,
     );
 
     return authResponse;
@@ -95,6 +96,7 @@ class AuthRepository {
     await _tokenStorage.setUserInfo(
       fullName: fullName,
       email: _tokenStorage.email ?? '',
+      isEmailVerified: _tokenStorage.isEmailVerified,
     );
   }
 }
