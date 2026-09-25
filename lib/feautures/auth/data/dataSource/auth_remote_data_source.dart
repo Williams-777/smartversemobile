@@ -104,4 +104,10 @@ class AuthRemoteDataSource {
       _apiClient.handleError(e);
     }
   }
+
+  // There is no update-profile endpoint in the current Swagger spec —
+  // user-controller only exposes GET /user/profile and DELETE /user/delete.
+  // Once the backend adds one (PATCH /api/v1/user/profile is the natural
+  // fit, matching the PATCH used for updateLabel/updateStatus elsewhere in
+  // the spec), wire it here and remove EditProfileScreen's local-only save.
 }

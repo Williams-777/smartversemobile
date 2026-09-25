@@ -85,4 +85,16 @@ class AuthRepository {
     await _remoteDataSource.deleteAccount();
     await _tokenStorage.clear();
   }
+
+  /// No backend endpoint exists yet to persist profile edits (see the
+  /// note in AuthRemoteDataSource), so this only updates the locally
+  /// cached name — it does NOT reach the server, and will be overwritten
+  /// the next time getProfile()/login() run. Swap this out once
+  /// PATCH /api/v1/user/profile (or similar) exists.
+  Future<void> updateLocalName(String fullName) async {
+    await _tokenStorage.setUserInfo(
+      fullName: fullName,
+      email: _tokenStorage.email ?? '',
+    );
+  }
 }

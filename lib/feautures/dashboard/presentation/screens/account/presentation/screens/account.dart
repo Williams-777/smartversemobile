@@ -231,7 +231,7 @@ class _SignedInScreenState extends State<_SignedInScreen> {
                   iconBgColor: AppColors.usageC,
                   title: "My Profile",
                   subtitle: "Manage your personal information",
-                  onTap: () {},
+                  onTap: () => Navigator.pushNamed(context, AppRoute.editProfile),
                 ),
                 _buildDivider(),
                 _buildMenuItem(
